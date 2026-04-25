@@ -17,9 +17,9 @@ def create_embeddings() -> HuggingFaceEmbeddings:
     import os
     os.environ["TOKENIZERS_PARALLELISM"] = "false"
     
-    # 恢复用户要求的详细获取说明
-    rag_logger.info(f"🧠 正在加载嵌入模型: {settings.EMBEDDING_MODEL}")
-    rag_logger.info("📢 [提示] 系统正在从 Hugging Face 开源社区获取模型权重 (若本地已有缓存则直接从 ~/.cache 加载)。")
-    rag_logger.info("🚀 正在将权重加载至本地内存以进行语义计算...")
+    # 拟人化/业务化提示
+    rag_logger.info(f"🎨 正在准备本地语义分析引擎: {settings.EMBEDDING_MODEL}")
+    rag_logger.info("📢 [提示] 系统正在从 Hugging Face 获取模型知识库 (若本地已有缓存将秒速加载)。")
+    rag_logger.info("🚀 知识库加载中，即将开启本地深度理解能力...")
     
     return HuggingFaceEmbeddings(model_name=settings.EMBEDDING_MODEL)

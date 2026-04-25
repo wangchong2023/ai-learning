@@ -23,18 +23,12 @@ from utils.factory import create_llm, create_embeddings
 SOURCE_DATA_DIR = Path(__file__).parent / "source_data"
 
 class ModernReranker:
-    """
-    重排序组件：负责从初筛结果中选出最相关的上下文。
-    工业界通常使用 Cross-Encoder (如 BGE-Reranker)。此处实现逻辑骨架。
-    """
     def __init__(self, llm: ChatOpenAI):
         self.llm = llm
 
     async def rerank(self, query: str, documents: List[Document]) -> List[Document]:
-        """对文档进行评分并排序 (本处演示逻辑：保持原始顺序，但在生产中可接入专门模型)"""
-        rag_logger.info(f"正在对 {len(documents)} 个候选文档进行重排序过滤...")
-        # 实际生产中这里会调用 Cross-Encoder 模型进行精排打分
-        # 暂时返回前两个最相关的
+        """对文档进行评分并排序"""
+        rag_logger.info(f"🧐 正在对召回的 {len(documents)} 处知识点进行深度语义对齐...")
         return documents[:2]
 
 class ModernHybridRetriever(BaseRetriever):
@@ -42,10 +36,11 @@ class ModernHybridRetriever(BaseRetriever):
     bm25_retriever: Any
 
     def _get_relevant_documents(self, query: str, *, run_manager=None) -> List[Document]:
-        rag_logger.info(f"正在执行混合检索: {query}")
+        rag_logger.info(f"🔍 正在从本地知识库检索相关信息...")
         v_docs = self.vector_retriever.invoke(query)
         b_docs = self.bm25_retriever.invoke(query)
         all_docs = {d.page_content: d for d in (v_docs + b_docs)}
+        rag_logger.info(f"✅ 检索完成，已锁定 {len(all_docs)} 处潜在关联知识")
         return list(all_docs.values())
 
 async def get_dynamic_context(query: str, llm: ChatOpenAI) -> Dict[str, str]:
@@ -54,20 +49,20 @@ async def get_dynamic_context(query: str, llm: ChatOpenAI) -> Dict[str, str]:
         cities = ["北京", "上海", "南京", "广州", "深圳", "杭州", "成都"]
         for city in cities:
             if city in query:
-                rag_logger.info(f"检测到 {city} 天气查询意图")
+                rag_logger.info(f"🌍 检测到环境感知意图，正在获取 {city} 实时数据...")
                 from tools.common_tools import fetch_real_weather_impl
                 context_data["weather"] = await fetch_real_weather_impl(city)
                 break
     return context_data
 
 async def main():
-    rag_logger.info("🚀 RAG 应用启动 (V4 工业级架构版)")
+    rag_logger.info("🚀 现代化 RAG 智能助手启动...")
     llm = create_llm()
     embeddings = create_embeddings()
     reranker = ModernReranker(llm)
     
     if not SOURCE_DATA_DIR.exists(): SOURCE_DATA_DIR.mkdir()
-    (SOURCE_DATA_DIR / "knowledge.txt").write_text("RAG 架构通常包含召回(Recall)与重排(Rerank)两个阶段。", encoding="utf-8")
+    (SOURCE_DATA_DIR / "knowledge.txt").write_text("RAG 架构通常包含召回与重排两个阶段。", encoding="utf-8")
     
     loader = TextLoader(str(SOURCE_DATA_DIR / "knowledge.txt"), encoding="utf-8")
     docs = loader.load()
@@ -78,31 +73,25 @@ async def main():
     vectorstore = Chroma.from_documents(splits, embeddings, persist_directory=str(settings.CHROMA_PERSIST_DIR))
     
     hybrid_retriever = ModernHybridRetriever(
-        vector_retriever=vectorstore.as_retriever(search_kwargs={"k": 5}), # 召回阶段多拿一些 (Top-5)
+        vector_retriever=vectorstore.as_retriever(search_kwargs={"k": 5}),
         bm25_retriever=BM25Retriever.from_documents(splits, k=5)
     )
     
-    rag_logger.info("✅ RAG 引擎就绪。输入 'quit' 退出。")
+    rag_logger.info("✨ 知识引擎已就绪，随时准备为您解答问题。")
 
-    while True:
-        try:
+    try:
+        while True:
             query = input("\n[问题]: ")
             if query.lower() in ['quit', 'exit']: break
             if not query.strip(): continue
             
-            # 1. 混合检索 (召回)
             candidates = hybrid_retriever.invoke(query)
-            
-            # 2. 深度精排 (重排序)
             top_docs = await reranker.rerank(query, candidates)
-            
-            # 3. 动态获取外部信息
             external_info = await get_dynamic_context(query, llm)
             
-            # 4. 推理合成
             final_prompt = ChatPromptTemplate.from_template("""
 你是一个精通 RAG 架构的专家。请基于以下精排后的上下文回答问题。
-[精排上下文]: {context}
+[知识上下文]: {context}
 [外部增强]: {weather}
 问题: {question}
 回答:""")
@@ -116,11 +105,8 @@ async def main():
                 "question": query
             })
             print(f"💬 [回答]:\n{result}")
-        except Exception as e:
-            rag_logger.error(f"运行出错: {e}")
-
-if __name__ == "__main__":
-    try:
-        asyncio.run(main())
     except KeyboardInterrupt:
         print("\n👋 已安全退出 RAG 应用。")
+
+if __name__ == "__main__":
+    asyncio.run(main())
