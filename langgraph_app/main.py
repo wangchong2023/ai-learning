@@ -49,7 +49,7 @@ async def main():
 
         while True:
             try:
-                user_input = input("\n[您]: ")
+                user_input = input("\n💬 [智能体指令] 请输入您的需求 (输入 'quit' 退出): ")
                 if user_input.lower() in ['quit', 'exit']:
                     break
                 

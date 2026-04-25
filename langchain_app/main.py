@@ -46,7 +46,7 @@ async def main():
         
         while True:
             try:
-                user_input = input("\n[您]: ")
+                user_input = input("\n💬 [基础演示] 请输入您的问题 (输入 'quit' 退出): ")
                 if user_input.lower() in ['quit', 'exit']: break
                 
                 async for event in app.astream(

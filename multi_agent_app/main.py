@@ -11,7 +11,7 @@ async def main():
     
     while True:
         try:
-            user_input = input("\n[您]: ")
+            user_input = input("\n💡 [协作任务] 请输入需要研究并创作的主题 (输入 'quit' 退出): ")
             if user_input.lower() in ['quit', 'exit']: break
             if not user_input.strip(): continue
             

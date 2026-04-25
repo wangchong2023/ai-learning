@@ -81,7 +81,7 @@ async def main():
 
     try:
         while True:
-            query = input("\n[问题]: ")
+            query = input("\n🔍 [知识库检索] 请输入您的问题 (输入 'quit' 退出): ")
             if query.lower() in ['quit', 'exit']: break
             if not query.strip(): continue
             
