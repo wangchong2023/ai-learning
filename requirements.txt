@@ -1,26 +1,19 @@
-# 核心 AI 框架
+# 核心 LLM 编排
 langchain>=0.3.0
+langchain-openai>=0.2.0
 langgraph>=0.2.0
-langchain-openai
-langchain-community
-langchain-huggingface
-langchain-chroma
+langchain-huggingface>=0.1.0
 
-# 模型协议与服务器 (MCP)
+# 向量数据库与存储
+langchain-chroma>=0.1.0
+rank_bm25>=0.2.2
+
+# 基础设施
+python-dotenv>=1.0.0
 mcp>=1.0.0
-fastmcp>=0.1.0
+sentence-transformers>=3.0.0
+pydantic>=2.0.0
 
-# 向量处理与嵌入
-sentence-transformers
-chromadb
-bm253
-
-# 异步与数据库驱动
-aiosqlite
-asyncio
-
-# 环境与工具
-python-dotenv
-pathlib
-tqdm
-typing-extensions
+# 调试与测试
+pytest>=7.0.0
+pytest-asyncio>=0.21.0

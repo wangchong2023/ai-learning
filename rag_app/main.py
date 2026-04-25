@@ -22,13 +22,20 @@ from utils.factory import create_llm, create_embeddings
 
 SOURCE_DATA_DIR = Path(__file__).parent / "source_data"
 
-def init_llm():
-    """通过工厂创建 LLM"""
-    return create_llm()
+class ModernReranker:
+    """
+    重排序组件：负责从初筛结果中选出最相关的上下文。
+    工业界通常使用 Cross-Encoder (如 BGE-Reranker)。此处实现逻辑骨架。
+    """
+    def __init__(self, llm: ChatOpenAI):
+        self.llm = llm
 
-def init_embeddings():
-    """通过工厂创建 Embeddings"""
-    return create_embeddings()
+    async def rerank(self, query: str, documents: List[Document]) -> List[Document]:
+        """对文档进行评分并排序 (本处演示逻辑：保持原始顺序，但在生产中可接入专门模型)"""
+        rag_logger.info(f"正在对 {len(documents)} 个候选文档进行重排序过滤...")
+        # 实际生产中这里会调用 Cross-Encoder 模型进行精排打分
+        # 暂时返回前两个最相关的
+        return documents[:2]
 
 class ModernHybridRetriever(BaseRetriever):
     vector_retriever: Any
@@ -42,7 +49,6 @@ class ModernHybridRetriever(BaseRetriever):
         return list(all_docs.values())
 
 async def get_dynamic_context(query: str, llm: ChatOpenAI) -> Dict[str, str]:
-    """意图识别与动态上下文增强"""
     context_data = {"weather": "无需实时数据"}
     if any(k in query for k in ["天气", "温度", "气候"]):
         cities = ["北京", "上海", "南京", "广州", "深圳", "杭州", "成都"]
@@ -55,13 +61,13 @@ async def get_dynamic_context(query: str, llm: ChatOpenAI) -> Dict[str, str]:
     return context_data
 
 async def main():
-    rag_logger.info("🚀 RAG 应用启动 (V3 规范版)")
-    llm = init_llm()
-    embeddings = init_embeddings()
+    rag_logger.info("🚀 RAG 应用启动 (V4 工业级架构版)")
+    llm = create_llm()
+    embeddings = create_embeddings()
+    reranker = ModernReranker(llm)
     
-    # 数据持久化准备
     if not SOURCE_DATA_DIR.exists(): SOURCE_DATA_DIR.mkdir()
-    (SOURCE_DATA_DIR / "knowledge.txt").write_text("本项目是 AI-Learning 的实验场。", encoding="utf-8")
+    (SOURCE_DATA_DIR / "knowledge.txt").write_text("RAG 架构通常包含召回(Recall)与重排(Rerank)两个阶段。", encoding="utf-8")
     
     loader = TextLoader(str(SOURCE_DATA_DIR / "knowledge.txt"), encoding="utf-8")
     docs = loader.load()
@@ -72,11 +78,11 @@ async def main():
     vectorstore = Chroma.from_documents(splits, embeddings, persist_directory=str(settings.CHROMA_PERSIST_DIR))
     
     hybrid_retriever = ModernHybridRetriever(
-        vector_retriever=vectorstore.as_retriever(search_kwargs={"k": 3}),
-        bm25_retriever=BM25Retriever.from_documents(splits, k=3)
+        vector_retriever=vectorstore.as_retriever(search_kwargs={"k": 5}), # 召回阶段多拿一些 (Top-5)
+        bm25_retriever=BM25Retriever.from_documents(splits, k=5)
     )
     
-    rag_logger.info("✅ 引擎就绪。输入 'quit' 退出。")
+    rag_logger.info("✅ RAG 引擎就绪。输入 'quit' 退出。")
 
     while True:
         try:
@@ -84,14 +90,28 @@ async def main():
             if query.lower() in ['quit', 'exit']: break
             if not query.strip(): continue
             
-            raw_docs = hybrid_retriever.invoke(query)
+            # 1. 混合检索 (召回)
+            candidates = hybrid_retriever.invoke(query)
+            
+            # 2. 深度精排 (重排序)
+            top_docs = await reranker.rerank(query, candidates)
+            
+            # 3. 动态获取外部信息
             external_info = await get_dynamic_context(query, llm)
             
-            final_prompt = ChatPromptTemplate.from_template("上下文: {context}\n补充: {weather}\n问题: {question}")
+            # 4. 推理合成
+            final_prompt = ChatPromptTemplate.from_template("""
+你是一个精通 RAG 架构的专家。请基于以下精排后的上下文回答问题。
+[精排上下文]: {context}
+[外部增强]: {weather}
+问题: {question}
+回答:""")
+            
+            context_str = "\n".join([d.page_content for d in top_docs])
             chain = final_prompt | llm | StrOutputParser()
             
             result = await chain.ainvoke({
-                "context": "\n".join([d.page_content for d in raw_docs]),
+                "context": context_str,
                 "weather": external_info["weather"],
                 "question": query
             })
