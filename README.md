@@ -5,7 +5,8 @@
 ## 🏗️ 全局架构概览
 
 *   **能力层 (`tools/`)**：中心化工具库。采用“定义一次，多处运行”的原则。
-*   **协作层 (`multi_agent_app/`)**：**多智能体协作**。展示研究员与作家如何分工接力。
+*   **规划层 (`planner_app/`)**：高级复杂规划。实现 **Plan-and-Execute** 模式，分离逻辑拆解与具体执行。
+*   **协作层 (`multi_agent_app/`)**：多智能体协作。展示研究员与作家如何分工接力。
 *   **编排层 (`langgraph_app/`)**：核心高级智能体。基于图的状态机架构，集成 **HITL (人工审批流)**。
 *   **增强层 (`rag_app/`)**：**Active RAG** 演示。集成两阶段检索 (Recall -> Rerank) 架构。
 *   **公共层 (`utils/`)**：项目基石。包含配置中心、结构化日志及 **LangSmith 可观测性** 接入。
@@ -33,10 +34,13 @@ make rag
 # 3. 启动多智能体协作实验室
 make multi
 
-# 4. 运行带审批流的智能体 (LangGraph HITL)
+# 4. 运行高级深度规划实验室 (Plan & Execute)
+make plan
+
+# 5. 运行带审批流的智能体 (LangGraph HITL)
 make graph
 
-# 5. 启动 MCP 服务总线
+# 6. 启动 MCP 服务总线
 make mcp
 ```
 
