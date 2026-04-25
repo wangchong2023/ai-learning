@@ -1,6 +1,7 @@
 import os
 import asyncio
 import traceback
+import readline
 from pathlib import Path
 from dotenv import load_dotenv
 

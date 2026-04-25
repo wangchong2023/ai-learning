@@ -1,6 +1,7 @@
 import os
 import shutil
 import asyncio
+import readline
 from pathlib import Path
 from typing import List, Dict, Any, Optional
 

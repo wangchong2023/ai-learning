@@ -1,5 +1,6 @@
 import os
 import asyncio
+import readline
 from typing import Annotated, Sequence
 from pathlib import Path
 
