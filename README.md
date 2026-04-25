@@ -4,35 +4,36 @@
 
 ## 🏗️ 全局架构概览
 
-*   **能力层 (`tools/`)**：中心化工具库。采用“定义一次，多处运行”的原则，支持被 LangChain 直接调用，或通过 **MCP Server** 发布给外部客户端。
-*   **编排层 (`langgraph_app/`)**：核心高级智能体。基于图的状态机架构，深度集成 **HITL (人工审批流)** 确保高危操作受控。
-*   **增强层 (`rag_app/`)**：**Active RAG** 演示。集成 Chroma 向量库与 BM25 混合检索，具备“动态意图识别”，能根据需求自动增强检索上下文。
-*   **基础层 (`langchain_app/`)**：基础演示。虽然是基础模块，但也适配了异步 IO 与统一工具库。
-*   **公共层 (`utils/`)**：项目基石。包含 `config.py` (统一配置中心) 和 `logger.py` (结构化日志系统)。
+*   **能力层 (`tools/`)**：中心化工具库。采用“定义一次，多处运行”的原则。
+*   **编排层 (`langgraph_app/`)**：核心高级智能体。基于图的状态机架构，集成 **HITL (人工审批流)**。
+*   **增强层 (`rag_app/`)**：**Active RAG** 演示。集成两阶段检索 (Recall -> Rerank) 架构。
+*   **公共层 (`utils/`)**：项目基石。包含配置中心与结构化日志系统。
 *   **测试层 (`tests/`)**：质量保障。包含自动化集成测试用例。
 
 ## 🛠️ 技术选型原理
 
-1.  **Hugging Face 本地模型**：在 `rag_app` 中，系统自动管理模型缓存。**100% 本地化语义计算**，数据不出内网。
+1.  **两阶段检索架构**：在 `rag_app` 中实现召回与精排分离，显著提升回答质量。
 2.  **混合存储策略**：
-    *   **短时记忆**：LangGraph 与 LangChain 默认使用 **`:memory:`** 以规避锁冲突。
-    *   **长时知识**：RAG 向量库通过 **`utils/config.py`** 配置持久化路径。
-3.  **组件工厂模式**：全量组件（LLM、Embeddings）通过 `utils/factory.py` 统一产出，确保参数全局一致且易于维护。
+    *   **短时记忆**：默认使用 **`:memory:`** 以规避并发冲突。
+    *   **长时知识**：通过配置文件指定磁盘持久化路径。
+3.  **组件工厂模式**：通过 `utils/factory.py` 统一创建 LLM 与 Embeddings。
 
-## 🚀 快速启动
+## 🚀 运行与维护
 
-> [!IMPORTANT]
-> **运行环境要求**：必须使用 `./env/venv/bin/python3` 执行脚本，以确保依赖完整。
+本项目引入了 **Makefile** 以简化开发流程，并集成了 **GitHub Actions** 进行自动化质量监控。
 
 ```bash
-# 1. 运行带审批的智能体 (推荐测试)
-./env/venv/bin/python3 -m langgraph_app.main
+# 1. 运行自动化系统测试 (验证工程地基)
+make test
 
-# 2. 运行自动化系统测试 (验证地基)
-PYTHONPATH=. ./env/venv/bin/python3 tests/test_system.py
+# 2. 运行现代化 RAG 应用 (Recall -> Rerank 架构)
+make rag
 
-# 3. 启动 MCP 服务总线
-./env/venv/bin/python3 -m tools.mcp_server
+# 3. 运行带审批流的智能体 (LangGraph HITL)
+make graph
+
+# 4. 启动 MCP 服务总线
+make mcp
 ```
 
 ## 📄 深度学习路径
