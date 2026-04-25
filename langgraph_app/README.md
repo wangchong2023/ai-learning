@@ -8,8 +8,8 @@
 *   **决策透明**：用户可实时查看模型生成的工具调用参数，并决定是否继续。
 
 ## 🏗️ 状态机架构
-*   `core/state.py`：定义了 `AgentState` 结构，使用 `add_messages` 实现消息自动追加。
-*   `core/nodes.py`：包含 `reasoning` (思考节点) 与 `tools` (执行节点)。
+*   `core/state.py`：定义状态结构。
+*   `core/nodes.py`：核心推理节点，通过 **`utils.factory`** 接入统一配置的 LLM。
 *   `core/builder.py`：将节点连接为有向图，并注入 `MemorySaver` 持久化层。
 
 ## 🚀 运行
