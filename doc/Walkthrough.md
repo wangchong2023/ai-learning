@@ -49,7 +49,27 @@
 
 ---
 
-## 📡 3. 工具发布：MCP 协议 (Walkthrough)
+## 🤝 3. Multi-Agent：多智能体接力 (Walkthrough)
+
+路径：`multi_agent_app/core/`
+
+### Step 1: 复杂课题拆解 (Researcher)
+当您输入一个宏大主题（如“量子计算”）：
+1.  流程进入 `researcher_node`。
+2.  **动态提取**：研究员调用 LLM，将大课题拆解为数个“核心事实/研究维度”。
+3.  **状态流转**：研究员将事实写入状态机的 `research_notes` 字段，并将 `next_agent` 标记为 `writer`。
+
+### Step 2: 动态路由分发 (Router)
+LangGraph 的 `add_conditional_edges` 根据 `state["next_agent"]` 的值，将流程精准移交给对应的下一步节点（此处为 Writer）。
+
+### Step 3: 深度融合创作 (Writer)
+1.  流程进入 `writer_node`。
+2.  **上下文重组**：作家从状态机中读取 `research_notes`。
+3.  **定向输出**：作家基于严谨的笔记事实，重新编排语言风格并输出终稿，随后将节点流转至 `END`。
+
+---
+
+## 📡 4. 工具发布：MCP 协议 (Walkthrough)
 
 路径：`tools/mcp_server.py`
 
