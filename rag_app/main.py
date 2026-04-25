@@ -48,7 +48,8 @@ def init_llm():
 
 def init_embeddings():
     os.environ["TOKENIZERS_PARALLELISM"] = "false"
-    print(f"🧠 正在加载嵌入模型: {RAG_CONFIG['embedding_model']}...")
+    print(f"🧠 正在加载嵌入模型: {RAG_CONFIG['embedding_model']}")
+    print("📢 [提示] 模型正在从 Hugging Face 开源社区获取 (若本地已有缓存则直接加载)。")
     return HuggingFaceEmbeddings(
         model_name=RAG_CONFIG["embedding_model"],
         show_progress=False
