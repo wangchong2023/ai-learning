@@ -10,11 +10,15 @@ __pycache__/
 .pytest_cache/
 .mypy_cache/
 
-# 数据库与存储
+# 数据库与存储 (包含 SQLite 临时文件)
 *.sqlite
 *.sqlite3
+*.sqlite-shm
+*.sqlite-wal
+*.sqlite-journal
 rag_app/vector_storage/
 chroma_db/
+vector_storage/
 
 # IDE 与系统
 .vscode/
