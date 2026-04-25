@@ -36,5 +36,15 @@ make graph
 make mcp
 ```
 
-## 📄 深度学习路径
-想要深入了解底层原理？请查阅 [AI 知识全景路线图](./doc/AI_Knowledge_Roadmap.md)。
+## 📄 深度指引与原理
+*   **[手把手原理与代码指引](./doc/Walkthrough.md)**：详细解析 RAG、LangGraph 与 MCP 的底层流转逻辑。
+*   **[AI 知识全景路线图](./doc/AI_Knowledge_Roadmap.md)**：覆盖从硬件到 Agent 治理的全维技术栈。
+
+## 🧠 核心逻辑流转 (Step-by-Step)
+
+1.  **用户输入** -> `rag_app` 启动混合检索。
+2.  **知识召回** -> `ModernHybridRetriever` (Chroma + BM25) 粗筛。
+3.  **精排重排序** -> `ModernReranker` 深度对齐，锁定最强上下文。
+4.  **智能体决策** -> `langgraph_app` 分析上下文并生成 `tool_calls`。
+5.  **人工审批 (HITL)** -> 系统在执行工具前自动挂起，等待 `make graph` 控制台确认。
+6.  **最终输出** -> 总结所有知识与工具结果，输出精准答复。
