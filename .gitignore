@@ -1,0 +1,26 @@
+# Python 虚拟环境
+env/venv/
+venv/
+.venv/
+
+# 敏感环境变量 (绝对不能提交)
+.env
+env/.env
+
+# Python 缓存与编译文件
+__pycache__/
+*.py[cod]
+*$py.class
+
+# SQLite 数据库文件
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
+langgraph_app/database/
+langchain_app/memory.sqlite
+
+# 向量数据库存储
+rag_app/vector_storage/
+
+# macOS 系统文件
+.DS_Store
