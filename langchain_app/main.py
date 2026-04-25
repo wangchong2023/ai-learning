@@ -64,4 +64,7 @@ async def main():
                 agent_logger.error(f"发生错误: {e}")
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    try:
+        asyncio.run(main())
+    except KeyboardInterrupt:
+        print("\n👋 已安全退出基础演示应用。")

@@ -120,4 +120,7 @@ async def main():
             rag_logger.error(f"运行出错: {e}")
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    try:
+        asyncio.run(main())
+    except KeyboardInterrupt:
+        print("\n👋 已安全退出 RAG 应用。")

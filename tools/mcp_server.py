@@ -10,5 +10,8 @@ for name, func in mcp_tool_funcs.items():
     mcp.tool(name=name)(func)
 
 if __name__ == "__main__":
-    # 使用 stdio 传输协议启动服务
-    mcp.run(transport='stdio')
+    try:
+        # 使用 stdio 传输协议启动服务
+        mcp.run(transport='stdio')
+    except KeyboardInterrupt:
+        pass # MCP Server 退出时通常由客户端控制，静默退出即可
