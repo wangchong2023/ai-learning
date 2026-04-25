@@ -1,20 +1,24 @@
 # RAG (Retrieval-Augmented Generation) 现代化应用
 
-本模块演示了如何构建一个具备动态感知能力的交互式 RAG 系统。
+本模块展示了如何通过混合检索与动态意图识别，构建一个“懂行”的 AI 助手。
 
 ## 🧠 核心原理
 
-1.  **混合检索**：结合了向量搜索 (Chroma) 和关键词搜索 (BM25)。
-2.  **本地嵌入**：模型来自 **Hugging Face**，在本地运行，确保隐私。
-3.  **动态上下文**：系统会根据问题意图，自动决定是否调用外部工具（如天气）来增强上下文。
+1.  **混合检索 (Hybrid Search)**：
+    *   **向量检索 (Chroma)**：负责捕捉“语义”相似性。
+    *   **关键词检索 (BM25)**：负责捕捉“精确匹配”（如特定术语）。
+2.  **本地嵌入 (Local Embeddings)**：
+    *   使用 `HuggingFaceEmbeddings` 驱动。
+    *   默认模型：`sentence-transformers/all-MiniLM-L6-v2`。
+3.  **动态增强 (Active RAG)**：
+    *   不同于传统的静态 RAG，本模块会在推理时判断是否需要通过外部工具补充实时信息（如天气）。
 
-## 🛠️ Hugging Face 获取说明
-当您看到“正在加载嵌入模型”时，系统正在执行以下操作：
-*   检查本地缓存。
-*   若无缓存，则从 **Hugging Face 开源社区** 下载模型权重。
-*   将模型加载到您的本地内存中。
+## 🛠️ Hugging Face 加载流程
+首次运行或清除缓存后，系统会自动从 **Hugging Face 开源社区** 下载所需模型。
+*   **存放位置**：通常位于 `~/.cache/huggingface`。
+*   **安全性**：仅加载公开权重，无需上传您的任何数据。
 
 ## 🚀 运行
 ```bash
-python rag_app/main.py
+./env/venv/bin/python3 rag_app/main.py
 ```
