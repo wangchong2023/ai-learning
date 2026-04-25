@@ -5,13 +5,17 @@ from multi_agent_app.core.builder import create_multi_agent_graph
 async def main():
     print("🚀 启动多智能体协作实验室 (Multi-Agent Lab)")
     print("📢 运行模式：接力协作 (Researcher -> Writer)")
+    print("✨ 示例主题：")
+    print("   - 分析量子计算在未来 5 年的商业化前景")
+    print("   - 探讨人工智能对现代教育体系的冲击与重塑")
+    print("   - 总结 2023 年新能源汽车行业的核心技术突破")
     print("=" * 50)
     
     app = create_multi_agent_graph()
     
     while True:
         try:
-            user_input = input("\n💡 [协作任务] 请输入需要研究并创作的主题 (输入 'quit' 退出): ")
+            user_input = input("\n💡 [协作任务] 请输入您的研究主题 (例如: '分析大语言模型的发展趋势', 输入 'quit' 退出): ")
             if user_input.lower() in ['quit', 'exit']: break
             if not user_input.strip(): continue
             
