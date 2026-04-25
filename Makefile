@@ -16,13 +16,13 @@ test:
 	$(PYPATH) $(PYTHON) tests/test_system.py
 
 rag:
-	$(PYTHON) rag_app/main.py
+	$(PYPATH) $(PYTHON) rag_app/main.py
 
 graph:
-	$(PYTHON) -m langgraph_app.main
+	$(PYPATH) $(PYTHON) -m langgraph_app.main
 
 mcp:
-	$(PYTHON) -m tools.mcp_server
+	$(PYPATH) $(PYTHON) -m tools.mcp_server
 
 clean:
 	find . -type d -name "__pycache__" -exec rm -rf {} +
