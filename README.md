@@ -5,9 +5,10 @@
 ## 🏗️ 全局架构概览
 
 *   **能力层 (`tools/`)**：中心化工具库。采用“定义一次，多处运行”的原则。
+*   **协作层 (`multi_agent_app/`)**：**多智能体协作**。展示研究员与作家如何分工接力。
 *   **编排层 (`langgraph_app/`)**：核心高级智能体。基于图的状态机架构，集成 **HITL (人工审批流)**。
 *   **增强层 (`rag_app/`)**：**Active RAG** 演示。集成两阶段检索 (Recall -> Rerank) 架构。
-*   **公共层 (`utils/`)**：项目基石。包含配置中心与结构化日志系统。
+*   **公共层 (`utils/`)**：项目基石。包含配置中心、结构化日志及 **LangSmith 可观测性** 接入。
 *   **测试层 (`tests/`)**：质量保障。包含自动化集成测试用例。
 
 ## 🛠️ 技术选型原理
@@ -29,12 +30,22 @@ make test
 # 2. 运行现代化 RAG 应用 (Recall -> Rerank 架构)
 make rag
 
-# 3. 运行带审批流的智能体 (LangGraph HITL)
+# 3. 启动多智能体协作实验室
+make multi
+
+# 4. 运行带审批流的智能体 (LangGraph HITL)
 make graph
 
-# 4. 启动 MCP 服务总线
+# 5. 启动 MCP 服务总线
 make mcp
 ```
+
+## 🔍 调试与监控 (LangSmith)
+
+本项目深度集成了 **LangSmith**。如需启用：
+1. 在 `env/.env` 中设置 `LANGSMITH_TRACING=true`。
+2. 填入您的 `LANGSMITH_API_KEY`。
+3. 访问 [LangSmith 控制台](https://smith.langchain.com) 查看全链路 Trace。
 
 ## 📄 深度指引与原理
 *   **[手把手原理与代码指引](./doc/Walkthrough.md)**：详细解析 RAG、LangGraph 与 MCP 的底层流转逻辑。

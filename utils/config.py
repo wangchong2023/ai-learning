@@ -16,6 +16,19 @@ class Settings:
     DEEPSEEK_API_KEY = os.getenv("DEEPSEEK_API_KEY")
     DEEPSEEK_BASE_URL = "https://api.deepseek.com"
     
+    # ==========================================
+    # LangSmith 可观测性配置
+    # ==========================================
+    LANGSMITH_TRACING = os.getenv("LANGSMITH_TRACING", "false").lower() == "true"
+    LANGSMITH_API_KEY = os.getenv("LANGSMITH_API_KEY")
+    LANGSMITH_PROJECT = os.getenv("LANGSMITH_PROJECT", "AI-Learning-Lab")
+
+    # 自动设置环境变量以启用追踪
+    if LANGSMITH_TRACING and LANGSMITH_API_KEY:
+        os.environ["LANGCHAIN_TRACING_V2"] = "true"
+        os.environ["LANGCHAIN_API_KEY"] = LANGSMITH_API_KEY
+        os.environ["LANGCHAIN_PROJECT"] = LANGSMITH_PROJECT
+    
     # 模型选型
     LLM_MODEL = "deepseek-chat"
     EMBEDDING_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
