@@ -7,31 +7,32 @@ llm = create_llm()
 
 async def researcher_node(state: MultiAgentState) -> dict:
     """研究员节点：负责模拟资料搜索逻辑。"""
-    agent_logger.info("🕵️ 研究员正在深入检索相关领域的资料...")
+    last_user_msg = state["messages"][0].content
+    agent_logger.info(f"🕵️ 研究员正在分析课题: {last_user_msg}")
     
-    # 模拟搜索过程
-    last_msg = state["messages"][-1].content
-    research_content = [
-        f"关于 '{last_msg}' 的核心事实 A：数据支撑点 1",
-        f"关于 '{last_msg}' 的核心事实 B：关键历史背景"
-    ]
+    # 模拟“搜索并提取核心事实”的推理过程
+    search_prompt = f"你是一个专业研究员。请针对课题 '{last_user_msg}' 提取出 2-3 个核心事实或研究维度，以帮助作家后续创作。只需输出事实要点。"
+    response = await llm.ainvoke(search_prompt)
+    
+    # 将提取到的事实存入研究笔记
+    research_content = [response.content]
     
     return {
         "research_notes": research_content,
         "next_agent": "writer",
-        "messages": [AIMessage(content="我已完成初步调研，收集到了核心事实，准备移交给作家进行撰写。")]
+        "messages": [AIMessage(content="✅ 我已完成深度调研，以下是我的研究简报，现移交给作家。")]
     }
 
 async def writer_node(state: MultiAgentState) -> dict:
     """作家节点：负责基于研究笔记进行创作。"""
-    agent_logger.info("✍️ 作家正在根据研究资料进行深度创作...")
+    agent_logger.info("✍️ 作家正在接入研究笔记进行深度创作...")
     
     notes = "\n".join(state.get("research_notes", []))
-    prompt = f"请基于以下研究笔记写一段精简的分析：\n{notes}"
+    prompt = f"你是一个资深作家。请基于以下专业研究笔记，写一段极具洞察力的分析短文：\n\n{notes}"
     
     response = await llm.ainvoke(prompt)
     
     return {
-        "messages": [AIMessage(content=f"【创作完成】\n{response.content}")],
+        "messages": [AIMessage(content=f"📝 【最终文案】\n\n{response.content}")],
         "next_agent": "finish"
     }

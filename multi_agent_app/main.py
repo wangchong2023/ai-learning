@@ -4,6 +4,7 @@ from multi_agent_app.core.builder import create_multi_agent_graph
 
 async def main():
     print("🚀 启动多智能体协作实验室 (Multi-Agent Lab)")
+    print("📢 运行模式：接力协作 (Researcher -> Writer)")
     print("=" * 50)
     
     app = create_multi_agent_graph()
@@ -18,16 +19,17 @@ async def main():
             state_input = {"messages": [HumanMessage(content=user_input)], "research_notes": []}
             async for event in app.astream(state_input, stream_mode="values"):
                 if not event or "messages" not in event: continue
-                # 打印最新的智能体回复
+                # 获取最新产生的消息
                 msg = event["messages"][-1]
-                if msg.content:
+                # 仅打印 AI 的新回复
+                if msg.content and not isinstance(msg, HumanMessage):
                     print(f"\n{msg.content}")
                     
-        except KeyboardInterrupt:
-            print("\n👋 已安全退出多智能体实验室。")
-            break
         except Exception as e:
             print(f"❌ 运行出错: {e}")
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    try:
+        asyncio.run(main())
+    except KeyboardInterrupt:
+        print("\n👋 已安全退出多智能体实验室。")
