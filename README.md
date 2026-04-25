@@ -8,6 +8,8 @@
 *   **编排层 (`langgraph_app/`)**：核心高级智能体。基于图的状态机架构，深度集成 **HITL (人工审批流)** 确保高危操作受控。
 *   **增强层 (`rag_app/`)**：**Active RAG** 演示。集成 Chroma 向量库与 BM25 混合检索，具备“动态意图识别”，能根据需求自动增强检索上下文。
 *   **基础层 (`langchain_app/`)**：基础演示。虽然是基础模块，但也适配了异步 IO 与统一工具库。
+*   **公共层 (`utils/`)**：项目基石。包含 `config.py` (统一配置中心) 和 `logger.py` (结构化日志系统)。
+*   **测试层 (`tests/`)**：质量保障。包含自动化集成测试用例。
 
 ## 🛠️ 技术选型原理
 
@@ -24,8 +26,8 @@
 # 1. 运行带审批的智能体 (推荐测试)
 ./env/venv/bin/python3 -m langgraph_app.main
 
-# 2. 运行交互式 RAG (混合检索演示)
-./env/venv/bin/python3 rag_app/main.py
+# 2. 运行自动化系统测试 (验证地基)
+PYTHONPATH=. ./env/venv/bin/python3 tests/test_system.py
 
 # 3. 启动 MCP 服务总线
 ./env/venv/bin/python3 -m tools.mcp_server
