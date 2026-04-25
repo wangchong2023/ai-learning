@@ -85,13 +85,32 @@ async def get_dynamic_context(query: str, llm: ChatOpenAI):
                 break
     return context_data
 
+def create_knowledge_files():
+    """创建模拟知识库，模拟真实的多源数据场景"""
+    if not SOURCE_DATA_DIR.exists():
+        SOURCE_DATA_DIR.mkdir(parents=True)
+    
+    # 模拟多源文档
+    (SOURCE_DATA_DIR / "langchain_info.txt").write_text(
+        "LangChain 是一个构建大模型应用的框架，由 Harrison Chase 于 2022 年创建。其核心组件包括 Chain、Memory 和 Agent。", 
+        encoding="utf-8"
+    )
+    (SOURCE_DATA_DIR / "vector_db_info.txt").write_text(
+        "向量数据库（如 Chroma）通过向量嵌入来存储非结构化数据。它支持高效的语义检索，而非简单的关键词匹配。", 
+        encoding="utf-8"
+    )
+    (SOURCE_DATA_DIR / "rag_concepts.txt").write_text(
+        "RAG (检索增强生成) 结合了检索系统和生成模型，能有效减少模型的幻觉问题并提供实时知识。", 
+        encoding="utf-8"
+    )
+    return list(SOURCE_DATA_DIR.glob("*.txt"))
+
 async def main():
     print("🌟 现代化交互式 RAG (V2 优化版) 启动...")
     llm = init_llm()
     embeddings = init_embeddings()
     
     # 初始化知识库
-    from .main import create_knowledge_files # 复用之前的辅助函数
     files = create_knowledge_files()
 
     all_docs = []

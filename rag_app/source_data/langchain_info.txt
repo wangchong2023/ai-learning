@@ -1,0 +1,1 @@
+LangChain 是一个构建大模型应用的框架，由 Harrison Chase 于 2022 年创建。其核心组件包括 Chain、Memory 和 Agent。
