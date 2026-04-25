@@ -109,4 +109,7 @@ async def main():
         print("\n👋 已安全退出 RAG 应用。")
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    try:
+        asyncio.run(main())
+    except KeyboardInterrupt:
+        pass  # 内层已打印退出信息，此处静默即可
