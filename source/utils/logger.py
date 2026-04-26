@@ -1,7 +1,7 @@
 import sys
 import os
 import logging
-from .config import settings
+from .config import settings, PROJECT_ROOT
 
 def setup_logger(name: str):
     """配置带格式的日志输出"""
@@ -13,7 +13,7 @@ def setup_logger(name: str):
         console_handler = logging.StreamHandler(sys.stdout)
         
         # 文件持久化输出 (工业级必备)
-        log_dir = settings.PROJECT_ROOT.parent / "logs"
+        log_dir = PROJECT_ROOT.parent / "logs"
         os.makedirs(log_dir, exist_ok=True)
         file_handler = logging.FileHandler(log_dir / "ai-system.log", encoding="utf-8")
         
