@@ -74,8 +74,8 @@ async def main():
     vectorstore = Chroma.from_documents(splits, embeddings, persist_directory=str(settings.CHROMA_PERSIST_DIR))
     
     hybrid_retriever = ModernHybridRetriever(
-        vector_retriever=vectorstore.as_retriever(search_kwargs={"k": 5}),
-        bm25_retriever=BM25Retriever.from_documents(splits, k=5)
+        vector_retriever=vectorstore.as_retriever(search_kwargs={"k": settings.RETRIEVER_K}),
+        bm25_retriever=BM25Retriever.from_documents(splits, k=settings.RETRIEVER_K)
     )
     
     rag_logger.info("✨ 知识引擎已就绪，随时准备为您解答问题。")

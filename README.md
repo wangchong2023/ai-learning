@@ -5,16 +5,16 @@
 ## 🏗️ 全局架构概览
 
 *   **能力层 (`source/tools/`)**：中心化工具库。采用“定义一次，多处运行”的原则。
-*   **规划层 (`source/planner_app/`)**：高级复杂规划。实现 **Plan-and-Execute** 模式，分离逻辑拆解与具体执行。
-*   **协作层 (`source/multi_agent_app/`)**：多智能体协作。展示研究员与作家如何分工接力。
-*   **编排层 (`source/langgraph_app/`)**：核心高级智能体。基于图的状态机架构，集成 **HITL (人工审批流)**。
-*   **增强层 (`source/rag_app/`)**：**Active RAG** 演示。集成两阶段检索 (Recall -> Rerank) 架构。
+*   **规划层 (`source/apps/planner_app/`)**：高级复杂规划。实现 **Plan-and-Execute** 模式，分离逻辑拆解与具体执行。
+*   **协作层 (`source/apps/multi_agent_app/`)**：多智能体协作。展示研究员与作家如何分工接力。
+*   **编排层 (`source/apps/langgraph_app/`)**：核心高级智能体。基于图的状态机架构，集成 **HITL (人工审批流)**。
+*   **增强层 (`source/apps/rag_app/`)**：**Active RAG** 演示。集成两阶段检索 (Recall -> Rerank) 架构。
 *   **公共层 (`source/utils/`)**：项目基石。包含配置中心、结构化日志及 **LangSmith 可观测性** 接入。
-*   **测试层 (`source/tests/`)**：质量保障。包含自动化集成测试用例。
+*   **测试层 (`tests/`)**：质量保障。包含自动化集成测试用例。
 
 ## 🛠️ 技术选型原理
 
-1.  **两阶段检索架构**：在 `source/rag_app` 中实现召回与精排分离，显著提升回答质量。
+1.  **两阶段检索架构**：在 `source/apps/rag_app` 中实现召回与精排分离，显著提升回答质量。
 2.  **混合存储策略**：
     *   **短时记忆**：默认使用 **`:memory:`** 以规避并发冲突。
     *   **长时知识**：通过配置文件指定磁盘持久化路径。
@@ -47,7 +47,7 @@ make mcp
 ## 🔍 调试与监控 (LangSmith)
 
 本项目深度集成了 **LangSmith**。如需启用：
-1. 在 `env/.env` 中设置 `LANGSMITH_TRACING=true`。
+1. 在根目录下修改或新建 `.env`，设置 `LANGSMITH_TRACING=true`。
 2. 填入您的 `LANGSMITH_API_KEY`。
 3. 访问 [LangSmith 控制台](https://smith.langchain.com) 查看全链路 Trace。
 
@@ -57,9 +57,9 @@ make mcp
 
 ## 🧠 核心逻辑流转 (Step-by-Step)
 
-1.  **用户输入** -> `source/rag_app` 启动混合检索。
+1.  **用户输入** -> `source/apps/rag_app` 启动混合检索。
 2.  **知识召回** -> `ModernHybridRetriever` (Chroma + BM25) 粗筛。
 3.  **精排重排序** -> `ModernReranker` 深度对齐，锁定最强上下文。
-4.  **智能体决策** -> `source/langgraph_app` 分析上下文并生成 `tool_calls`。
+4.  **智能体决策** -> `source/apps/langgraph_app` 分析上下文并生成 `tool_calls`。
 5.  **人工审批 (HITL)** -> 系统在执行工具前自动挂起，等待 `make graph` 控制台确认。
 6.  **最终输出** -> 总结所有知识与工具结果，输出精准答复。

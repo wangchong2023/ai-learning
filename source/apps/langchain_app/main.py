@@ -41,7 +41,7 @@ def create_app(memory):
 async def main():
     agent_logger.info("🌟 LangChain 基础演示启动...")
     
-    async with AsyncSqliteSaver.from_conn_string(":memory:") as memory:
+    async with AsyncSqliteSaver.from_conn_string(settings.SQLITE_DB_PATH) as memory:
         app = create_app(memory)
         config = {"configurable": {"thread_id": "legacy_verify"}}
         

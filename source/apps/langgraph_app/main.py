@@ -3,20 +3,12 @@ import asyncio
 import traceback
 import readline
 from pathlib import Path
-from dotenv import load_dotenv
-
-# 确保在导入核心模块前加载环境
-SCRIPT_DIR = Path(__file__).parent
-PROJECT_ROOT = SCRIPT_DIR.parent
-ENV_PATH = PROJECT_ROOT / "env" / ".env"
-if ENV_PATH.exists():
-    load_dotenv(ENV_PATH)
+from utils.config import settings
 
 from langchain_core.messages import HumanMessage, AIMessage, ToolMessage
 from langgraph.checkpoint.sqlite.aio import AsyncSqliteSaver
 from .core.builder import create_workflow, compile_with_hitl
 
-DB_PATH = ":memory:"
 
 async def handle_stream(app, input_data, config):
     """处理并打印流式事件"""
@@ -38,7 +30,7 @@ async def main():
         return
 
     print("🚀 正在初始化智能体引擎...")
-    async with AsyncSqliteSaver.from_conn_string(DB_PATH) as memory:
+    async with AsyncSqliteSaver.from_conn_string(settings.SQLITE_DB_PATH) as memory:
         workflow = create_workflow()
         app = compile_with_hitl(workflow, memory)
         

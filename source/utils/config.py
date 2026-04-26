@@ -2,9 +2,9 @@ import os
 from pathlib import Path
 from dotenv import load_dotenv
 
-# 定位项目根目录
+# 定位项目根目录 (现移至 source/ 下)
 PROJECT_ROOT = Path(__file__).parent.parent
-ENV_PATH = PROJECT_ROOT / "env" / ".env"
+ENV_PATH = PROJECT_ROOT.parent / ".env"
 
 if ENV_PATH.exists():
     load_dotenv(ENV_PATH)
@@ -34,9 +34,13 @@ class Settings:
     EMBEDDING_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
     
     # RAG 配置
-    CHROMA_PERSIST_DIR = PROJECT_ROOT / "rag_app" / "vector_storage" / "chroma_db"
+    CHROMA_PERSIST_DIR = PROJECT_ROOT / "apps" / "rag_app" / "vector_storage" / "chroma_db"
     CHUNK_SIZE = 300
     CHUNK_OVERLAP = 30
+    RETRIEVER_K = 5
+    
+    # 状态机持久化配置
+    SQLITE_DB_PATH = ":memory:"
     
     # 日志等级
     LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")
