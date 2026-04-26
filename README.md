@@ -6,24 +6,24 @@
 
 ```mermaid
 graph TD
-    Root[ai-learning Root]
-    Root --> Env[.env / Configs]
-    Root --> Makefile[Makefile CLI]
-    Root --> Docs[doc/ & notebooks/]
-    Root --> Source[source/]
-    Root --> Tests[tests/]
+    Root["ai-learning Root"]
+    Root --> Env[".env / Configs"]
+    Root --> Makefile["Makefile CLI"]
+    Root --> Docs["doc/ & notebooks/"]
+    Root --> Source["source/"]
+    Root --> Tests["tests/"]
     
-    Source --> Apps[apps/]
-    Source --> Tools[tools/]
-    Source --> Utils[utils/]
+    Source --> Apps["apps/"]
+    Source --> Tools["tools/"]
+    Source --> Utils["utils/"]
     
-    Apps --> RAG[rag_app]
-    Apps --> Planner[planner_app]
-    Apps --> Multi[multi_agent_app]
-    Apps --> Graph[langgraph_app]
+    Apps --> RAG["rag_app"]
+    Apps --> Planner["planner_app"]
+    Apps --> Multi["multi_agent_app"]
+    Apps --> Graph["langgraph_app"]
     
-    Tools -.提供能力.-> Apps
-    Utils -.提供支撑.-> Apps
+    Tools -.->|提供能力| Apps
+    Utils -.->|提供支撑| Apps
 ```
 *   **能力层 (`source/tools/`)**：中心化工具库。采用“定义一次，多处运行”的原则。
 *   **规划层 (`source/apps/planner_app/`)**：高级复杂规划。实现 **Plan-and-Execute** 模式，分离逻辑拆解与具体执行。
