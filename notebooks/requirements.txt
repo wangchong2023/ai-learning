@@ -1,0 +1,25 @@
+# ==========================================
+# Notebooks 实验环境专属依赖
+# ==========================================
+
+# 核心训练库 (Mac 可安装，但可能较慢或依赖 CPU/MPS)
+transformers>=4.40.0
+datasets>=2.16.0
+peft>=0.10.0
+trl>=0.8.0
+accelerate>=0.29.0
+sentencepiece>=0.2.0
+protobuf>=4.25.0
+
+# ---------------------------------------------------------
+# ⚠️ 注意: 以下库（通常用于云端加速）在 macOS 本地直接安装极大概率会报错！
+# 因为它们重度依赖 NVIDIA CUDA，Mac (Apple Silicon) 是 MPS 架构。
+# 如果您执意要在本地尝试安装，请取消注释。但强烈建议在 Kaggle/Colab 环境中使用。
+# ---------------------------------------------------------
+
+# bitsandbytes>=0.43.0         # 4-bit 量化 (Mac 本地仅支持极少量 CPU 回退)
+# unsloth                      # 高效微调库 (严格要求 NVIDIA GPU 和 Linux/Windows)
+# flash-attn                   # Flash Attention (严格要求 NVIDIA GPU，Mac 编译必挂)
+# xformers                     # 内存优化注意力机制 (要求 CUDA)
+# triton                       # OpenAI 的 GPU 编译器 (Mac 原生不支持)
+# causal-conv1d                # 同样依赖 CUDA
