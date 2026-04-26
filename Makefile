@@ -1,7 +1,7 @@
 .PHONY: test rag graph mcp multi clean help
 
 # 默认变量
-PYTHON = ./env/venv/bin/python3
+PYTHON = ./env/bin/python3
 PYPATH = PYTHONPATH=source:source/apps:.
 
 help:
