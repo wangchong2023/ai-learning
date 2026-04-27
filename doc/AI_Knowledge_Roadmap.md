@@ -27,10 +27,10 @@
 ## 1. 导引
 > **循序渐进的学习建议**：本文档按逻辑模块排列，并与学习路线图深度对齐。各阶段推荐入口：
 >
-> + **L0 入门者**：从 [2. 知识体系](#2-知识体系) 建立底层逻辑与数学基座。
+> + **L0 入门者**：从 [🌟 第二篇：知识体系](#🌟-第二篇知识体系) 建立底层逻辑与数学基座。
 > + **L1 使用者**：通过 [3. 编码助手](#3-编码助手) 实现即时研发提效。
 > + **L2 & L3 开发者**：从 [4. 通用框架](#4-通用框架) 进阶至 [2.4 L3: 开发者](#24-l3-开发者) 与 [11.4 RAG 落地与性能调优 [Build]](#114-rag-落地与性能调优-build)。
-> + **L4 架构师**：务必参考 [9. 质量评估与可观测性](#9-质量评估与可观测性)、[11.9 治理、安全与合规 [Operate]](#119-治理安全与合规-operate) 及 [11.6 模型微调与强化实战 [Train]](#116-model-微调与强化实战-train)。
+> + **L4 架构师**：务必参考 [9. 质量评估与可观测性](#9-质量评估与可观测性)、[11.9 治理、安全与合规 [Operate]](#119-治理安全与合规-operate) 及 [11.6 模型微调与强化实战 [Train]](#116-模型微调与强化实战-train)。
 >
 
 ### 1.1 系统图谱
@@ -808,7 +808,7 @@ graph LR
 ```
 
 > [!TIP]  
-**深挖提示**：关于 SFT 样本的标准化格式、LoRA 微调的 Python 实现以及最新的 **GRPO 强化训练** 细节，请跳转至 [**11.11 模型微调与强化训练实战**](#1111-模型微调与强化训练实战)。
+**深挖提示**：关于 SFT 样本的标准化格式、LoRA 微调的 Python 实现以及最新的 **GRPO 强化训练** 细节，请跳转至 [**11.6 模型微调与强化实战 [Train]**](#116-模型微调与强化实战-train)。
 >
 
 ##### 1.4.4.4 部署与分发
@@ -1539,7 +1539,7 @@ graph TD
 > + **平民路径**：直接注册 DeepSeek、OpenRouter 或 OpenAI 账号，通过 API 调用云端模型。你只需要一台能联网的轻薄本即可开始。
 > + **进阶路径**：当你需要极高隐私或低成本大规模处理数据时，再考虑购入 NVIDIA 显卡进行本地部署。
 
-#### 11.1.2 原子级调用实战
+#### 11.1.2 实战入门
 在构建复杂的智能体之前，开发者必须掌握如何通过代码与模型进行最基础的“一问一答”。以下是基于 OpenAI SDK 标准的原子级调用示例：
 
 ```python
@@ -1601,7 +1601,7 @@ def search_knowledge(query: str):
 
 ```
 
-#### 11.2.1 Function Calling
+#### 11.2.1 工具调用
 **核心本质**：模型不再仅仅输出文本，而是输出结构化的“工具指令”。
 
 ```python
@@ -1631,7 +1631,23 @@ print(response.tool_calls) # 输出：[{'name': 'search_knowledge', 'args': {'qu
 > 3. **精确描述的重要性**：Docstring 是 Agent 的“使用说明书”，如果描述模糊，模型将无法正确判断何时调用该工具。
 >
 
-#### 11.2.2 记忆系统
+#### 11.2.2 结构化输出
+**核心本质**：强制 Agent 返回符合业务 Schema 的 Pydantic 对象，而非模糊的自然语言。
+
+```python
+from pydantic import BaseModel, Field
+
+class Report(BaseModel):
+    summary: str = Field(description="核心总结")
+    source_count: int = Field(description="引用来源数量")
+
+# 强制模型按照 Report 结构进行输出
+structured_llm = model.with_structured_output(Report)
+result = structured_llm.invoke("总结关于 AI Agent 的核心定义")
+print(result.summary) # 直接获得结构化对象字段
+```
+
+#### 11.2.3 记忆系统
 **核心本质**：区分短期“会话上下文”与长期“持久化状态”。
 
 ```python
@@ -1648,12 +1664,12 @@ config = {"configurable": {"thread_id": "user_42"}}
 app.invoke({"messages": [("user", "我的名字是小明")]}, config)
 ```
 
-#### 11.2.3 智能体设计模式实战 [Build]
+#### 11.2.4 智能体设计模式
 > **理论前置**：在动手编写代码前，请确保您已深度理解 [**1.4.5.5 智能体设计模式矩阵**](#1455-智能体设计模式从本能到深度思考) 中的核心差异。
 > 
 > 以下通过 **LangGraph** 状态机框架，分别展示三种主流模式的代码逻辑映射。
 
-#### 11.2.4 ReAct 模式实战 [Build]
+#### 11.2.5 ReAct 模式
 **核心本质**：通过 **ReAct** (Reason+Act) 拆解任务。Agent 不仅要思考，还要根据工具返回的 Observation 修正后续路径。
 
 ```python
@@ -1678,7 +1694,7 @@ workflow.add_conditional_edges("agent", should_continue)
 workflow.add_edge("action", "agent")
 ```
 
-#### 11.2.5 Plan-and-Execute 实战 [Build]
+#### 11.2.6 Plan-and-Execute模式
 **核心逻辑**：Planner 负责全局规划，Executor 负责按部就班执行，Replanner 负责在任务结束后进行最终审校。
 
 ```python
@@ -1697,7 +1713,7 @@ workflow.add_edge("executor", "re-planner")
 workflow.add_conditional_edges("re-planner", lambda state: "planner" if state.not_done else END)
 ```
 
-#### 11.2.6 Reflexion 模式实战 [Build]
+#### 11.2.7 Reflexion模式
 > **核心逻辑：反思与自我修正 (Reflexion)**
 **核心逻辑**：Actor 产出初稿，Critic 提出尖锐意见，Actor 根据意见重写，直到满足质量阈值。
 
@@ -1714,7 +1730,7 @@ workflow.add_edge("actor", "critic")
 workflow.add_conditional_edges("critic", lambda state: "actor" if state.score < 90 else END)
 ```
 
-#### 11.2.7 持久化与 Agent Loop
+#### 11.2.8 持久化与 Agent Loop
 ```python
 # 编译并注入 Checkpointer (持久化层)
 app = workflow.compile(checkpointer=memory)
@@ -1727,7 +1743,7 @@ for chunk in app.stream({"messages": [("user", "查询 LangGraph 并总结")]}, 
     print(chunk) # 实时观测 Agent 的思考与动作轨迹
 ```
 
-#### 11.2.8 人机协作与断点控制
+#### 11.2.9 人机协作与断点控制
 > **核心概念：人机协作 (Human-in-the-loop, HITL)**
 **核心本质**：在 Agent 执行高危操作（如转账、删库）前强制暂停并等待人工审批。
 
@@ -1746,28 +1762,13 @@ print(snapshot.next) # 输出: ('action',)
 app.invoke(None, config)
 ```
 
-#### 11.2.9 结构化输出
-**核心本质**：强制 Agent 返回符合业务 Schema 的 Pydantic 对象，而非模糊的自然语言。
-
-```python
-from pydantic import BaseModel, Field
-
-class Report(BaseModel):
-    summary: str = Field(description="核心总结")
-    source_count: int = Field(description="引用来源数量")
-
-# 强制模型按照 Report 结构进行输出
-structured_llm = model.with_structured_output(Report)
-result = structured_llm.invoke("总结关于 AI Agent 的核心定义")
-print(result.summary) # 直接获得结构化对象字段
-```
 
 ### 11.3 多智能体实战 [Build]
 > **理论前置**：关于集中式、对话式与角色驱动的深度架构分析，请参考 [**1.4.5.6 多智能体编排范式**](#1456-多智能体编排从单兵到集团军)。
 > 
 > 以下通过三大主流框架，展示不同编排范式的代码逻辑映射。
 
-#### 11.3.1 核心范式代码示例
+#### 11.3.1 多智能体协作
 **1. 集中式实战 (LangGraph Supervisor)**
 ```python
 # 逻辑：主 Agent (Supervisor) 审视全局状态，决定分发给哪个 Worker
@@ -1853,7 +1854,7 @@ workflow.set_entry_point("router")
 ---
 
 ### 11.4 RAG 落地与性能调优 [Build]
-#### 11.4.1 文本 RAG [Core]
+#### 11.4.1 文本 RAG
 **工程逻辑**：遵循原理篇中的“全生命周期闭环”，在代码实现上通过工具链集成实现自动化。详细原理图请参考 [**1.4.5.3 检索增强生成**](#1453-检索增强生成)。
 
 | 模块 | 推荐工具体系 | 选型依据与高阶技术剖析 (Advanced RAG) |
